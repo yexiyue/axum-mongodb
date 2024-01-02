@@ -2,7 +2,13 @@
 name = "axum-mongodb-core"
 version = "0.1.0"
 edition = "2021"
-
+authors = ["yexiyue"]
+keywords = ["axum", "macro", "mongodb"]
+categories = ["axum", "database"]
+repository = "https://github.com/yexiyue/axum-mongodb"
+readme = "README.md"
+license = "MIT"
+description = "the core of axum-mongodb"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 

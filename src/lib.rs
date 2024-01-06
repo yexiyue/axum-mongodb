@@ -1,23 +1,32 @@
+#[doc(hidden)]
+pub use axum::async_trait;
 pub use axum_mongodb_core::{inject, inject_meta, main, Column};
-pub use futures;
+#[doc(hidden)]
 pub use mongodb;
+
 mod mongodb_server;
-mod server;
-mod servers_warp;
 pub use mongodb_server::MongoDbServer;
-pub use server::Server;
-pub use servers_warp::ServersWarp;
 
 pub mod preload {
+    pub use crate::CollectionInit;
     pub use crate::MongoDbServer;
     pub use crate::NewWithDb;
-    pub use crate::Server;
-    pub use crate::ServersWarp;
     pub use axum_mongodb_core::{inject, inject_meta, main, Column};
-    pub struct Servers;
     pub struct DBServers;
 }
 
+#[async_trait]
 pub trait NewWithDb {
-    fn new(db: &mongodb::Database) -> Self;
+    async fn new(db: mongodb::Database) -> Self;
+}
+
+#[async_trait]
+pub trait CollectionInit {
+    async fn init(&self);
+}
+
+pub struct CreateIndexOptions {
+    pub keys: mongodb::bson::Document,
+    pub unique: bool,
+    pub name: Option<String>,
 }

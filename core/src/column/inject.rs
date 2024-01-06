@@ -15,9 +15,7 @@ fn change_args(st: &mut syn::ItemFn) {
     for item in st.sig.inputs.iter_mut() {
         if let FnArg::Typed(pat_type) = item {
             if let syn::Type::Path(TypePath { path, .. }) = pat_type.ty.as_ref() {
-                if path.is_ident("Servers") {
-                    pat_type.ty = syn::parse_str("ServersWarp<crate::Servers>").unwrap();
-                } else if path.is_ident("DBServers") {
+                if path.is_ident("DBServers") {
                     pat_type.ty = syn::parse_str("MongoDbServer<crate::Servers>").unwrap();
                 }
             }

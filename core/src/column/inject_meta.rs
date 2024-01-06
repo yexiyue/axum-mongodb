@@ -17,10 +17,10 @@ pub fn inject_meta(st: &syn::ItemStruct) -> Result<proc_macro2::TokenStream> {
         let field_name = syn::Ident::new(name, proc_macro2::Span::call_site());
         let struct_type: TypePath = syn::parse_str(&struct_name)?;
         fields.extend(quote!(
-            pub #field_name:axum_mongodb::Server<#struct_type>,
+            pub #field_name:crate::Server<#struct_type>,
         ));
         fields_init.extend(quote!(
-            #field_name:axum_mongodb::Server::new(db),
+            #field_name:crate::Server::new(db).await,
         ));
     }
 
@@ -29,9 +29,10 @@ pub fn inject_meta(st: &syn::ItemStruct) -> Result<proc_macro2::TokenStream> {
         #vis struct #struct_name{
             #fields
         }
-
+        
+        #[axum_mongodb::async_trait]
         impl axum_mongodb::NewWithDb for #struct_name{
-            fn new(db:&mongodb::Database)->Self{
+            async fn new(db:mongodb::Database)->Self{
                 #struct_name{
                     #fields_init
                 }

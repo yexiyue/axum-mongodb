@@ -1,4 +1,4 @@
-use crate::{servers_warp::ServersWarp, NewWithDb};
+use crate::NewWithDb;
 use axum::{
     async_trait,
     extract::{FromRef, FromRequestParts},
@@ -12,27 +12,19 @@ where
     T: Clone,
 {
     pub db: Database,
-    pub servers: ServersWarp<T>,
+    pub servers: T,
 }
 
+#[async_trait]
 impl<T> NewWithDb for MongoDbServer<T>
 where
     T: Clone + NewWithDb,
 {
-    fn new(db: &Database) -> Self {
+    async fn new(db: Database) -> Self {
         Self {
-            servers: ServersWarp::new(T::new(db)),
-            db: db.clone(),
+            servers: T::new(db.clone()).await,
+            db,
         }
-    }
-}
-
-impl<T> FromRef<MongoDbServer<T>> for ServersWarp<T>
-where
-    T: Clone,
-{
-    fn from_ref(input: &MongoDbServer<T>) -> Self {
-        input.servers.clone()
     }
 }
 

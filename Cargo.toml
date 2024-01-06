@@ -1,6 +1,6 @@
 [package]
 name = "axum-mongodb"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["yexiyue"]
 keywords = ["axum", "macro", "mongodb"]
@@ -15,16 +15,8 @@ description = "macro for axum with mongodb"
 
 [dependencies]
 axum = "0.7.3"
-axum-mongodb-core = { path = "core",version = "0.1.0" }
-futures = "0.3.30"
+axum-mongodb-core = { path = "core", version = "0.1.1" }
 mongodb = "2.8.0"
-serde = { version = "1.0.193", features = ["derive"] }
-serde_json = "1.0.109"
-tokio = { version = "1.35.1", features = ["full"] }
-
-[[example]]
-name = "struct"
-path = "examples/struct.rs"
 
 [workspace]
 members = ["core"]

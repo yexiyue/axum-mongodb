@@ -5,6 +5,7 @@ use compound::CompoundIndex;
 use multikey::MultikeyIndex;
 use single::SingleIndex;
 use syn::Result;
+// 定义索引类型
 pub enum Indexes {
     Single(SingleIndex),
     Compound(CompoundIndex),

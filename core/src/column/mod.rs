@@ -10,6 +10,7 @@ mod inject_meta;
 pub use inject::inject;
 pub use inject_meta::inject_meta;
 
+// 收集元信息，并生成代码，实现Server<T>
 pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::TokenStream> {
     let mut res = proc_macro2::TokenStream::new();
     let mut field_index = Vec::new();
@@ -47,6 +48,7 @@ pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::To
         ));
     }
 
+    // 为Server<T>实现CollectionInit，在初始化时创建索引
     let struct_name = &st.ident;
     if drop {
         res.extend(quote! {

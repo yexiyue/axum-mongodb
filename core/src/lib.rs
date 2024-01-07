@@ -1,3 +1,18 @@
+/*!
+该库是axum-mongodb的核心库，主要提供其中宏相关的实现
+
+提供以下宏
+
+- [`Column`]：`#[derive(Column)]`Derive宏，用于收集结构体元信息
+
+- [`macro@main`]：`#[axum_mongodb::main]`属性宏，在main函数上使用，主要生成相关结构体，例如Servers、Server
+
+- [`macro@inject`]：`#[axum_mongodb::inject]`属性宏，用于axum handler上，主要作用是替换`DBServers`到`axum_mongodb::MongoDbServer<crate::Servers>`
+
+该库不支持直接使用，具体用法请查看[axum_mongodb](https://docs.rs/axum-mongodb/0.1.2/axum_mongodb/)
+
+*/
+
 #[doc(hidden)]
 use proc_macro::TokenStream;
 mod column;
@@ -12,6 +27,36 @@ use quote::quote;
 use syn::parse_macro_input;
 pub(crate) mod indexes;
 
+/**
+Column Derive宏，用于收集结构体元信息，以及初始化mongodb的索引
+
+每次修改索引时，默认不删除全部索引，但会尝试删除老的索引
+
+属性列表
+
+- dropIndexes：是否删除当前集合的全部索引，默认不删除
+
+- singleIndex：[单索引](https://www.mongodb.com/docs/manual/core/indexes/index-types/index-single/)
+
+- compoundIndex：[复合索引](https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/)
+
+- multikeyIndex：[多键索引](https://www.mongodb.com/docs/manual/core/indexes/index-types/index-multikey/)
+
+
+# Example
+```rust
+#[derive(Debug, Clone, Column)]
+#[dropIndexes]
+struct User {
+    #[singleIndex(unique)]
+    name: String,
+    #[compoundIndex(unique, other_fields(name))]
+    age: i32,
+    #[multikeyIndex(unique, field_name = "age")]
+    address: String,
+}
+```
+ */
 #[proc_macro_derive(
     Column,
     attributes(dropIndexes, singleIndex, compoundIndex, multikeyIndex)
@@ -31,6 +76,17 @@ pub fn column_derive(input: TokenStream) -> TokenStream {
         .into()
 }
 
+/**
+最主要的宏，为Server<T>实现[`axum::extract::FromRequestParts`]等
+# Example
+```rust
+#[tokio::main]
+#[axum_mongodb::main]
+async fn main() {
+    //...
+}
+```
+*/
 #[proc_macro_attribute]
 pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
     let st = parse_macro_input!(input as syn::ItemFn);
@@ -126,6 +182,7 @@ pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
     res.into()
 }
 
+/// 用于宏内部，将收集到的元信息注入到结构体中
 #[proc_macro_attribute]
 pub fn inject_meta(_attr: TokenStream, input: TokenStream) -> TokenStream {
     let st = parse_macro_input!(input as syn::ItemStruct);
@@ -134,6 +191,19 @@ pub fn inject_meta(_attr: TokenStream, input: TokenStream) -> TokenStream {
         .into()
 }
 
+/**
+用于axum handler，用于替换extract类型，简化操作
+# Example
+```rust
+#[axum_mongodb::inject]
+async fn db_test(servers: DBServers) -> impl IntoResponse {
+    let db_name = servers.db.name();
+    Json(json!({
+        "db_name":db_name
+    }))
+}
+```
+*/
 #[proc_macro_attribute]
 pub fn inject(_attr: TokenStream, input: TokenStream) -> TokenStream {
     let st = parse_macro_input!(input as syn::ItemFn);

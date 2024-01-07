@@ -1,6 +1,7 @@
 use quote::quote;
 use syn::{FnArg, Result, TypePath};
 
+// 用于修改函数签名，方便用户使用
 pub fn inject(st: &syn::ItemFn) -> Result<proc_macro2::TokenStream> {
     let mut res = proc_macro2::TokenStream::new();
     let mut st = st.clone();

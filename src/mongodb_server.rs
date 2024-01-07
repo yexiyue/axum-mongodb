@@ -6,6 +6,14 @@ use axum::{
 use mongodb::Database;
 use std::convert::Infallible;
 
+/**
+
+MongoDbServer
+一个结构体，用于存储数据库和集合，一个axum State，为其实现了FromRequestParts，
+从而可以通过MongodbServer extract获取数据库和集合
+可以使用[`crate::inject`]以及[`crate::preload::DBServers`]简化extract的使用
+
+*/
 #[derive(Debug, Clone)]
 pub struct MongoDbServer<T>
 where

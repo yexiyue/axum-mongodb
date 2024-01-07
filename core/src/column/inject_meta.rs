@@ -2,6 +2,7 @@ use crate::{column_meta::ColumnMeta, COLUMN_META};
 use quote::quote;
 use syn::{Result, TypePath};
 
+// 生成Servers结构体里的内容
 pub fn inject_meta(st: &syn::ItemStruct) -> Result<proc_macro2::TokenStream> {
     let mut fields = proc_macro2::TokenStream::new();
     let mut fields_init = proc_macro2::TokenStream::new();

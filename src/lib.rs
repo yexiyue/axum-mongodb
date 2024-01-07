@@ -16,10 +16,10 @@
 
 ```toml
 [dependencies]
-axum-mongodb = "x.y.z"
+axum-mongodb = "1.0.3"
 ```
 
-并通过 `cargo add` 命令快速安装：
+或者通过 `cargo add` 命令快速安装：
 
 ```bash
 cargo add axum-mongodb

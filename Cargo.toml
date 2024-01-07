@@ -15,7 +15,7 @@ description = "macro for axum with mongodb"
 
 [dependencies]
 axum = "0.7.3"
-axum-mongodb-core = { path = "core", version = "1.0.0" }
+axum-mongodb-core = { path = "core", version = "1.0.1" }
 futures = "0.3.30"
 mongodb = "2.8.0"
 

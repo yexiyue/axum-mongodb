@@ -14,9 +14,10 @@ pub use inject_meta::inject_meta;
 pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::TokenStream> {
     let mut res = proc_macro2::TokenStream::new();
     let mut field_index = Vec::new();
+    
+    let mut name = st.ident.to_string().to_lowercase();
+    name.push('s');
     if let syn::Data::Struct(syn::DataStruct { fields, .. }) = &st.data {
-        let mut name = st.ident.to_string().to_lowercase();
-        name.push('s');
         unsafe {
             match COLUMN_META.get(&name) {
                 Some(_) => {
@@ -28,7 +29,7 @@ pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::To
                 None => {
                     COLUMN_META
                         .borrow_mut()
-                        .insert(name.clone(), ColumnMeta::new(name, st.ident.to_string()));
+                        .insert(name.clone(), ColumnMeta::new(name.clone(), st.ident.to_string()));
                     for field in fields.iter() {
                         let field_name = &field.ident.as_ref().unwrap().to_string();
                         for attr in field.attrs.iter() {
@@ -95,8 +96,9 @@ pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::To
             #[axum_mongodb::async_trait]
             impl axum_mongodb::CollectionInit for crate::Server<#struct_name> {
                 async fn init(&self) {
+                    use axum_mongodb::futures::TryStreamExt;
                     let index = self.list_indexes(None).await;
-                    let doc_list = vec![#(#field_index),*];
+                    let doc_list:Vec<axum_mongodb::CreateIndexOptions> = vec![#(#field_index),*];
                     match index {
                         Ok(index) => {
                             let index_list = index
@@ -148,6 +150,14 @@ pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::To
             }
         });
     }
+    let name:syn::Ident=syn::parse_str(&name)?;
+    res.extend(quote!{
+        impl axum::extract::FromRef<axum_mongodb::MongoDbServer<crate::Servers>> for crate::Server<#struct_name> {
+            fn from_ref(input: &MongoDbServer<crate::Servers>) -> Self {
+                input.servers.#name.clone()
+            }
+        }
+    });
 
     Ok(res)
 }

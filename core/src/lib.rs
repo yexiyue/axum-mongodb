@@ -112,13 +112,7 @@ pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
             }
         }
 
-        impl axum::extract::FromRef<axum_mongodb::MongoDbServer<Servers>> for crate::Server<User> {
-            fn from_ref(input: &MongoDbServer<Servers>) -> Self {
-                input.servers.users.clone()
-            }
-        }
-
-        #[async_trait]
+        #[axum_mongodb::async_trait]
         impl<S, T> axum::extract::FromRequestParts<S> for crate::Server<T>
         where
             S: Send + Sync,
@@ -162,7 +156,7 @@ pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
             }
         }
 
-        #[async_trait]
+        #[axum_mongodb::async_trait]
         impl<S> axum::extract::FromRequestParts<S> for crate::Servers
         where
             S: Send + Sync,

@@ -1,9 +1,12 @@
 #[doc(hidden)]
 pub use axum::async_trait;
+
 pub use axum_mongodb_core::{inject, main, Column};
 
 #[doc(hidden)]
 pub use axum_mongodb_core::inject_meta;
+#[doc(hidden)]
+pub use futures;
 #[doc(hidden)]
 pub use mongodb;
 
@@ -11,7 +14,7 @@ mod mongodb_server;
 pub use mongodb_server::MongoDbServer;
 
 pub mod preload {
-//! 重新导出常用的结构体和宏
+    //! 重新导出常用的结构体和宏
 
     #[doc(hidden)]
     pub use crate::CollectionInit;

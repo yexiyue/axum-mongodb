@@ -6,6 +6,7 @@
 **axum-mongodb** 是一个为 [Axum](https://github.com/tokio-rs/axum) Web 框架量身打造的库，旨在提供一种简洁且优雅的 MongoDB 集成方案。本库的设计灵感来源于著名的 JavaScript 框架 [Nest.js](https://nestjs.com/)，致力于简化并提升 Axum 项目中对 MongoDB 数据库的操作效率。
 
 ### 功能亮点
+
 - **基于状态管理的数据库连接**
 - **便捷的 CRUD 操作封装**
 
@@ -15,7 +16,7 @@
 
 ```toml
 [dependencies]
-axum-mongodb = "1.0.3"
+axum-mongodb = "0.2.1"
 ```
 
 或通过 `cargo add` 命令快速安装：
@@ -32,7 +33,7 @@ cargo add axum-mongodb
 
 ```rust
 use anyhow::Result;
-use axum::{response::IntoResponse, routing::get, Router};
+use axum::{response::IntoResponse, routing::get, Router,Extension};
 use axum_mongodb::preload::*;
 use mongodb::{options::ClientOptions, Client};
 use tokio::net::TcpListener;
@@ -53,7 +54,8 @@ pub async fn start() -> Result<()> {
     let app = Router::new()
         .route("/", get(hello_world))
         .merge(todos_router())
-        .with_state(mongodb_server);
+        // 注册State
+        .layer(Extension(mongodb_server));
 
     // 启动服务器监听
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
@@ -145,11 +147,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use axum_mongodb::MongoDbServer;
 
 pub use server::Todo;
 
-pub fn todos_router() -> Router<MongoDbServer<Servers>> {
+pub fn todos_router() -> Router{
     Router::new()
         .route("/todos", post(create_todo).get(get_todos))
         .route("/todos/:id", get(get_todo).put(update_todo).delete(delete_todo))

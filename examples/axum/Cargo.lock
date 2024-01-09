@@ -174,7 +174,7 @@ dependencies = [
 
 [[package]]
 name = "axum-mongodb"
-version = "1.0.3"
+version = "0.2.0"
 dependencies = [
  "axum",
  "axum-mongodb-core",
@@ -184,7 +184,7 @@ dependencies = [
 
 [[package]]
 name = "axum-mongodb-core"
-version = "1.0.3"
+version = "0.2.0"
 dependencies = [
  "once_cell",
  "proc-macro2",

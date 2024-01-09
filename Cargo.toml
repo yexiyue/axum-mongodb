@@ -1,6 +1,6 @@
 [package]
 name = "axum-mongodb"
-version = "1.0.3"
+version = "0.2.0"
 edition = "2021"
 authors = ["yexiyue"]
 keywords = ["axum", "macro", "mongodb"]
@@ -15,7 +15,7 @@ description = "macro for axum with mongodb"
 
 [dependencies]
 axum = "0.7.3"
-axum-mongodb-core = { path = "core", version = "1.0.1" }
+axum-mongodb-core = { path = "core", version = "0.2.0" }
 futures = "0.3.30"
 mongodb = "2.8.0"
 

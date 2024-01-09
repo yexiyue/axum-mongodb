@@ -37,11 +37,11 @@ pub async fn delete_todo(todo: Server<Todo>, Path(id): Path<String>) -> impl Int
 pub async fn update_todo(
     todo: Server<Todo>,
     Path(id): Path<String>,
-    Json(TodoQuery { description, completed }): Json<TodoQuery>,
+    Json(TodoQuery {
+        description,
+        completed,
+    }): Json<TodoQuery>,
 ) -> impl IntoResponse {
-    let res = todo
-       .update_todo(id, description, completed)
-       .await
-       .unwrap();
+    let res = todo.update_todo(id, description, completed).await.unwrap();
     Json(res)
 }

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use axum::{response::IntoResponse, routing::get, Router};
+use axum::{response::IntoResponse, routing::get, Extension, Router};
 use axum_mongodb::preload::*;
 use mongodb::{options::ClientOptions, Client};
 use tokio::net::TcpListener;
@@ -40,7 +40,7 @@ pub async fn start() -> Result<()> {
                 .on_failure(trace::DefaultOnFailure::new().level(Level::ERROR)),
         )
         // 注册State
-        .with_state(mongodb_server);
+        .layer(Extension(mongodb_server));
 
     let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
     tracing::info!("listening on http://{}", listener.local_addr().unwrap());

@@ -152,9 +152,21 @@ pub fn collect_meta(st: &syn::DeriveInput, drop: bool) -> Result<proc_macro2::To
     }
     let name:syn::Ident=syn::parse_str(&name)?;
     res.extend(quote!{
-        impl axum::extract::FromRef<axum_mongodb::MongoDbServer<crate::Servers>> for crate::Server<#struct_name> {
-            fn from_ref(input: &MongoDbServer<crate::Servers>) -> Self {
-                input.servers.#name.clone()
+        #[axum_mongodb::async_trait]
+        impl<S> axum::extract::FromRequestParts<S> for crate::Server<#struct_name>
+        where
+            S: Send + Sync,
+        {
+            type Rejection = std::convert::Infallible;
+            async fn from_request_parts(
+                parts: &mut axum::http::request::Parts,
+                _state: &S,
+            ) -> Result<Self, Self::Rejection> {
+                let dbs = parts
+                    .extensions
+                    .get::<axum_mongodb::MongoDbServer<crate::Servers>>()
+                    .expect("can not get MongoDbServer");
+                Ok(dbs.servers.#name.clone())
             }
         }
     });

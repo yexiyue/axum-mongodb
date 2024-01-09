@@ -1,8 +1,5 @@
 use crate::NewWithDb;
-use axum::{
-    async_trait,
-    extract::{FromRef, FromRequestParts},
-};
+use axum::{async_trait, extract::FromRequestParts};
 use mongodb::Database;
 use std::convert::Infallible;
 
@@ -40,14 +37,18 @@ where
 impl<S, T> FromRequestParts<S> for MongoDbServer<T>
 where
     S: Send + Sync,
-    Self: FromRef<S>,
-    T: Clone,
+    T: Clone + Send + Sync + 'static,
 {
     type Rejection = Infallible;
     async fn from_request_parts(
-        _parts: &mut axum::http::request::Parts,
-        state: &S,
+        parts: &mut axum::http::request::Parts,
+        _state: &S,
     ) -> Result<Self, Self::Rejection> {
-        Ok(Self::from_ref(state))
+        let dbs = parts
+            .extensions
+            .get::<Self>()
+            .expect("can not get MongoDbServer");
+
+        Ok(dbs.clone())
     }
 }

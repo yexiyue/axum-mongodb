@@ -5,12 +5,9 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use axum_mongodb::MongoDbServer;
 pub use server::Todo;
 
-use crate::Servers;
-
-pub fn todos_router() -> Router<MongoDbServer<Servers>> {
+pub fn todos_router() -> Router {
     Router::new()
         .route("/todos", post(create_todo).get(get_todos))
         .route(

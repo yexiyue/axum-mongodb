@@ -113,23 +113,6 @@ pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
         }
 
         #[axum_mongodb::async_trait]
-        impl<S, T> axum::extract::FromRequestParts<S> for crate::Server<T>
-        where
-            S: Send + Sync,
-            Self: axum::extract::FromRef<S>,
-            T: Clone,
-        {
-            type Rejection = std::convert::Infallible;
-            async fn from_request_parts(
-                _parts: &mut axum::http::request::Parts,
-                state: &S,
-            ) -> Result<Self, Self::Rejection> {
-                use axum::extract::FromRef;
-                Ok(Self::from_ref(state))
-            }
-        }
-
-        #[axum_mongodb::async_trait]
         impl<T> axum_mongodb::NewWithDb for Server<T>
         where
             Self: axum_mongodb::CollectionInit,
@@ -149,26 +132,21 @@ pub fn main(_attr: TokenStream, input: TokenStream) -> TokenStream {
         #[axum_mongodb::inject_meta]
         pub struct Servers {}
 
-        impl axum::extract::FromRef<axum_mongodb::MongoDbServer<crate::Servers>> for crate::Servers
-        {
-            fn from_ref(input: &axum_mongodb::MongoDbServer<crate::Servers>) -> Self {
-                input.servers.clone()
-            }
-        }
-
         #[axum_mongodb::async_trait]
         impl<S> axum::extract::FromRequestParts<S> for crate::Servers
         where
             S: Send + Sync,
-            Self: axum::extract::FromRef<S>,
         {
             type Rejection = std::convert::Infallible;
             async fn from_request_parts(
-                _parts: &mut axum::http::request::Parts,
-                state: &S,
+                parts: &mut axum::http::request::Parts,
+                _state: &S,
             ) -> Result<Self, Self::Rejection> {
-                use axum::extract::FromRef;
-                Ok(Self::from_ref(state))
+                let dbs = parts
+                    .extensions
+                    .get::<axum_mongodb::MongoDbServer<Self>>()
+                    .expect("can not get MongoDbServer");
+                Ok(dbs.servers.clone())
             }
         }
         #st

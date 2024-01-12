@@ -9,7 +9,7 @@
 
 - [`macro@inject`]：`#[axum_mongodb::inject]`属性宏，用于axum handler上，主要作用是替换`DBServers`到`axum_mongodb::MongoDbServer<crate::Servers>`
 
-该库不支持直接使用，具体用法请查看[axum_mongodb](https://docs.rs/axum-mongodb/0.2.1/axum_mongodb/)
+该库不支持直接使用，具体用法请查看[axum_mongodb](https://docs.rs/axum-mongodb/latest/axum_mongodb/)
 
 */
 
